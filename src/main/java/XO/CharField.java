@@ -36,7 +36,7 @@ public class CharField {
     // метод установки поля (возвращает поле размером x*y, заполненное symbol
     public static char[][] setField(int y, int x, char symbol) {
         char[][] field = new char[y][x];
-        for (int i = 0; i <field.length ; i++) {
+        for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
                 field[i][j] = symbol;
             }
@@ -46,7 +46,7 @@ public class CharField {
 
     // метод для печати поля
     public static void printField(char[][] field) {
-        for (int i = 0; i <field.length ; i++) {
+        for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
                 System.out.print(field[i][j] + " ");
             }
@@ -62,11 +62,11 @@ public class CharField {
     // метод для проверки правильности и возможности хода
     public boolean isCellValid(int x, int y) {
         //проверка вылета за границы при вводе
-        if (!isInsideBorder(x,y)) {
+        if (!isInsideBorder(x, y)) {
             return false;
         }
         //Если ячейка уже занята
-        if (field[y][x] == PLAYER_1_SYMBOL || field[y][x] == PLAYER_2_SYMBOL){
+        if (field[y][x] == PLAYER_1_SYMBOL || field[y][x] == PLAYER_2_SYMBOL) {
             return false;
         }
         return true;
@@ -74,9 +74,9 @@ public class CharField {
 
     //Метод для хода игрока из окна программы
     public void userMove(int x, int y) {
-        if (isCellValid(x,y)) {
+        if (isCellValid(x, y)) {
             stepNumber++;
-            setPoint(x,y, PLAYER_1_SYMBOL);
+            setPoint(x, y, PLAYER_1_SYMBOL);
             lastStepX = x;
             lastStepY = y;
         }
@@ -86,34 +86,24 @@ public class CharField {
     //реализована блокировка ходов игрока1
     public void aiStep() {
         int x, y;
-        int[] needCoordinates = new int[2];  //массив с переменными-координатами для блокировки хода игрока (X,Y)
-        boolean flagIfPlayer1CanWinByNextMove = false;  //флаг, говорящий, может ли ИИ выиграть следующим ходом
-        //Сначала ИИ определяет необходимый ход, блокирующий игрока
-        Mark1:
-        for (int X = 0; X < field[0].length; X++) {
-            for (int Y = 0; Y < field.length ; Y++) {
-                if (isCellValid(X,Y)) {
-                    flagIfPlayer1CanWinByNextMove = winEstimate(X, Y, needCoordinates);
-                    if (flagIfPlayer1CanWinByNextMove) {
-                        stepNumber++;
-                        setPoint(needCoordinates[0],needCoordinates[1],PLAYER_2_SYMBOL);
-                        lastStepX = needCoordinates[0];
-                        lastStepY = needCoordinates[1];
-                        break Mark1;    //Метка близко, думаю, такое ее название допускается
-                    }
-                }
-            }
-        }
-        if (!flagIfPlayer1CanWinByNextMove) {   //если необходимости блокирующего хода нет - то рандом
+
+        //Проверка, можно ли выиграть следующим ходом. Если можно - ИИ выигрывает
+        if (tryToWinMove(PLAYER_2_SYMBOL))
+            return;
+        //Затем, если не выиграть следующим ходом, ИИ определяет необходимый ход, блокирующий игрока
+        if (tryToBlockMove(PLAYER_2_SYMBOL, PLAYER_1_SYMBOL))
+            return;
+
+   //если необходимости блокирующего хода нет - то рандомный ход
+        //TODO
             do {
                 x = rand.nextInt(SIZE_X);
                 y = rand.nextInt(SIZE_Y);
-            } while (!isCellValid(x,y));
+            } while (!isCellValid(x, y));
             stepNumber++;
-            setPoint(x,y,PLAYER_2_SYMBOL);
+            setPoint(x, y, PLAYER_2_SYMBOL);
             lastStepX = x;
             lastStepY = y;
-        }
     }
 
     //Проверка победы.
@@ -122,12 +112,12 @@ public class CharField {
         не совпадающих с X,Y ячейкой, либо до достижения нужного количества символов в ряду.
         Работает на любом количестве ячеек в поле
      */
-        return (checkWinLine(1, X,Y) || checkWinLine(2, X,Y) ||
-                checkWinLine(3, X,Y) || checkWinLine(4, X,Y) );
+        return (checkWinLine(1, X, Y) || checkWinLine(2, X, Y) ||
+                checkWinLine(3, X, Y) || checkWinLine(4, X, Y));
     }
 
     //Дополнительный метод для определения по одной из линий (для упрощения метода checkWin)
-    private boolean checkWinLine(int Direction,int X, int Y) {
+    private boolean checkWinLine(int Direction, int X, int Y) {
         //Коды Direction 1 - горизонталь, 2 вертикаль, 3 - главная диагональ, 4 - вспомогательная диагональ
         char targetSymbol = field[Y][X];    //считываем целевой символ по которому будем искать
         int targetPositionX = X;    //переменные для прицела
@@ -135,7 +125,7 @@ public class CharField {
         int scoreInLine = 1;    // счетчик количества одинаковых символов в линии подряд
         //Идем по линии в зависимости от направления
         int positionStepY = 0, positionStepX = 0;
-        switch (Direction){     //для определения направления указываем прицелу куда перемещаться для поиска
+        switch (Direction) {     //для определения направления указываем прицелу куда перемещаться для поиска
             case 1: {
                 positionStepX = 1;  //если горизонталь - то изменяем только Х
                 break;
@@ -156,9 +146,9 @@ public class CharField {
             }
         }
         //цикл поиска в прямом направлении
-        while  (isInsideBorder(targetPositionX + positionStepX, targetPositionY + positionStepY))  {
+        while (isInsideBorder(targetPositionX + positionStepX, targetPositionY + positionStepY)) {
             //перемещаем прицел в зависимости от направления если нет вылета за границу поля
-            if (targetSymbol == field[targetPositionY + positionStepY][targetPositionX + positionStepX] ) {
+            if (targetSymbol == field[targetPositionY + positionStepY][targetPositionX + positionStepX]) {
                 targetPositionY += positionStepY;
                 targetPositionX += positionStepX;
                 scoreInLine++;
@@ -171,7 +161,7 @@ public class CharField {
         targetPositionY = Y;
         //цикл поиска в обратном направлении
         while (isInsideBorder(targetPositionX - positionStepX, targetPositionY - positionStepY)) {
-            if  (targetSymbol == field[targetPositionY - positionStepY][targetPositionX - positionStepX]) {
+            if (targetSymbol == field[targetPositionY - positionStepY][targetPositionX - positionStepX]) {
                 targetPositionY -= positionStepY;
                 targetPositionX -= positionStepX;
                 scoreInLine++;
@@ -187,35 +177,79 @@ public class CharField {
     }
 
     //метод определения адреса ячейки внутри границы игрового поля
-    private boolean isInsideBorder (int x, int y) {
-        if (x<0 || x >field[0].length-1 || y<0 || y> field.length-1) {
+    private boolean isInsideBorder(int x, int y) {
+        if (x < 0 || x > field[0].length - 1 || y < 0 || y > field.length - 1) {
             return false;
         }
         return true;
     }
 
-    //метод определения потенциала (вероятности) выигрыша игрока в зависимости от хода ИИ
+    //метод определения выигрыша игрока следующим ходом в зависимости от хода ИИ
     /*Метод принимает координаты возможного хода ИИ (X,Y) и просчитывает, может ли Игрок1 победить на следующий ход
-    (true или false), и записывает в массив из 2х элементов коорднаты хода, которым Игрок1 может победить */
-    private boolean winEstimate (int X, int Y, int[] needCoordinates) {     //здесь X,Y - возможный ход ИИ
-        setPoint(X, Y, PLAYER_2_SYMBOL);
+    (true или false), и записывает в массив из 2х элементов координаты хода, которым Игрок1 может победить
+    player1Symbol - игрок, чей ход
+    player2Symbol -игрок*/
+    private boolean winEstimate(int X, int Y, char playerSymbol, char playerBlockedSymbol, int[] needCoordinates) {     //здесь X,Y - возможный ход ИИ
+        setPoint(X, Y, playerSymbol);   //ход игрока1
+        //ищем, может ли playerBlocked выиграть следующим ходом
         for (int i = 0; i < field[0].length; i++) {
             for (int j = 0; j < field.length; j++) {
-                if (isCellValid(i,j)) {
-                    setPoint(i,j,PLAYER_1_SYMBOL);
+                if (isCellValid(i, j)) {
+                    setPoint(i, j, playerBlockedSymbol);
                     if (checkWin(i, j)) {
                         setPoint(i, j, EMPTY_DOT);    //устанавливаем точку обратно
                         needCoordinates[0] = i;
                         needCoordinates[1] = j;
                         setPoint(X, Y, EMPTY_DOT);
-                        return true;   //потенциально можно превратить в byte и оценивать эффективность хода соперника
-                                        // но за 1 вечер уже не успеть насочинять такую штуку :)
+                        return true;
                     }
                     setPoint(i, j, EMPTY_DOT);  //восстанавливаем точку на поле
                 }
             }
         }
         setPoint(X, Y, EMPTY_DOT);
+        return false;
+    }
+
+    //метод для победы следующим ходом или блокировки победы следующим ходом противника
+    //player1Symbol - игрок, чей ход
+    //player2Symbol - игрок, чью победу смотрим (при блокировке - противник, при победе AI - сам AI)
+    private boolean tryToWinMove(char playerSymbol){
+        for (int X = 0; X < field[0].length; X++) {
+            for (int Y = 0; Y < field.length; Y++) {
+                if (isCellValid(X, Y)) {
+                    setPoint(X, Y, playerSymbol);
+                    if (checkWin(X, Y))
+                        return true;
+                    else {
+                        setPoint(X, Y, EMPTY_DOT);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    //метод для победы следующим ходом или блокировки победы следующим ходом противника
+    //player1Symbol - игрок, чей ход
+    //player2Symbol - игрок, чью победу смотрим (при блокировке - противник, при победе AI - сам AI)
+    private boolean tryToBlockMove(char player1Symbol, char player2Symbol){
+        int[] needCoordinates = new int[2];  //массив с переменными-координатами для хода  (X,Y)
+        boolean CanWinByNextMove = false;
+        for (int X = 0; X < field[0].length; X++) {
+            for (int Y = 0; Y < field.length; Y++) {
+                if (isCellValid(X, Y)) {
+                    CanWinByNextMove = winEstimate(X, Y, player1Symbol, player2Symbol, needCoordinates);
+                    if (CanWinByNextMove) {
+                        stepNumber++;
+                        setPoint(needCoordinates[0], needCoordinates[1], player1Symbol);
+                        lastStepX = needCoordinates[0];
+                        lastStepY = needCoordinates[1];
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
