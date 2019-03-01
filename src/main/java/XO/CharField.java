@@ -4,10 +4,7 @@ import java.awt.event.MouseEvent;
 import java.util.Random;
 import java.util.Scanner;
 
-/*
-    Автор: Алексеев Я.О.
-    08.05.2018
- */
+
 public class CharField {
     // Символы игроков и пустых клеток
     private final char PLAYER_1_SYMBOL = 'X';
@@ -20,7 +17,6 @@ public class CharField {
     private int SIZE_Y;
     private int SCORE_IN_LINE;     //сколько символов подряд нужно для выигрыша
 
-    private Scanner scanner = new Scanner(System.in);
     private final Random rand = new Random();
     private char[][] field;
 
@@ -58,10 +54,6 @@ public class CharField {
         }
     }
 
-    public void printField() {  //перегруженный метод для печати поля экземпляра
-        printField(field);
-    }
-
     // метод для задания символа в поле
     public void setPoint(int x, int y, char symbol) {
         field[y][x] = symbol;
@@ -69,30 +61,15 @@ public class CharField {
 
     // метод для проверки правильности и возможности хода
     public boolean isCellValid(int x, int y) {
-        //дополнил код проверкой вылета за границы при вводе, иначе при вводе сверх меры кидает исключение
+        //проверка вылета за границы при вводе
         if (!isInsideBorder(x,y)) {
             return false;
         }
+        //Если ячейка уже занята
         if (field[y][x] == PLAYER_1_SYMBOL || field[y][x] == PLAYER_2_SYMBOL){
             return false;
         }
         return true;
-    }
-
-    // метод для хода Игрока из консоли (не используется)
-    private void userMove() {
-        int x;
-        int y;
-        do {
-            System.out.println("Ваш ход! Введите Х, У");
-            x = scanner.nextInt()-1;
-            y = scanner.nextInt()-1;
-        } while (!isCellValid(x,y));
-
-        setPoint(x,y, PLAYER_1_SYMBOL);
-        //После хода устанавливаем последние значения хода
-        lastStepX = x;
-        lastStepY = y;
     }
 
     //Метод для хода игрока из окна программы
@@ -108,8 +85,7 @@ public class CharField {
     //метод для хода ИИ
     //реализована блокировка ходов игрока1
     public void aiStep() {
-        int x;
-        int y;
+        int x, y;
         int[] needCoordinates = new int[2];  //массив с переменными-координатами для блокировки хода игрока (X,Y)
         boolean flagIfPlayer1CanWinByNextMove = false;  //флаг, говорящий, может ли ИИ выиграть следующим ходом
         //Сначала ИИ определяет необходимый ход, блокирующий игрока
@@ -210,7 +186,7 @@ public class CharField {
         return false;   // если не достигли нужного количества
     }
 
-    //доп метод определения адреса ячейки внутри границы игрового поля
+    //метод определения адреса ячейки внутри границы игрового поля
     private boolean isInsideBorder (int x, int y) {
         if (x<0 || x >field[0].length-1 || y<0 || y> field.length-1) {
             return false;

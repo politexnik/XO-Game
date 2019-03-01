@@ -5,12 +5,13 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+//Поле игры
 public class Map extends JPanel {
 
-    public static final int MODE_H_V_A = 0;
-    public static final int MODE_H_V_H = 1;
+    public static final int MODE_HUMAN_VS_AI = 0;     //Human vs AI
+    public static final int MODE_HUMAN_VS_HUMAN = 1;     //Human vs Human
 
-    // 24.1 чтобы заполнить поле
+    //Заполнение поля
     int[][] field;
     int fieldSizeX;
     int fieldSizeY;
@@ -24,20 +25,20 @@ public class Map extends JPanel {
     //окно завершения игры (ссылка прилетает из GameWindow)
     private static EndGameWindow endGameWindow;
 
-    // 27 если ничего не нарисовано
+    // если ничего не нарисовано
     boolean isInitialized = false;
     // если игра закончена
     boolean isEnded = false;
 
-    //добавляем символьный объект для поля игры
+    //символьный объект для поля игры
     CharField gameField;
-    // 10 создаем конструктор и задаем цвет поля
+    //создаем конструктор и задаем цвет поля
     Map() {
         setBackground(Color.orange);
         //окно завершения игры
         endGameWindow = GameWindow.getEndGameWindow();
 
-        // 30 создаем слушателя шелчка мышки
+        // создаем слушателя шелчка мышки
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -93,9 +94,9 @@ public class Map extends JPanel {
         }
     }
 
-    // 11 создаем метод который говорит о типе игры, размеры поля, и выиграшная длина
+    // метод который говорит о типе игры, размеры поля, и выиграшная длина
     void startNewGame(int mode, int fieldSizeX, int fieldSizeY, int winLength){
-       //25 запоняем поля при старте новой игры
+       //заполняем поля при старте новой игры
         this.fieldSizeX = fieldSizeX;
         this.fieldSizeY = fieldSizeY;
         this.winLength = winLength;
@@ -106,7 +107,7 @@ public class Map extends JPanel {
         repaint();
     }
 
-    // 24.1 метод для рисования
+    // метод для рисования
     void render(Graphics g) {
         if(!isInitialized) return;
 
@@ -116,20 +117,20 @@ public class Map extends JPanel {
         cellHeight = panelHeight / fieldSizeY;
         cellWidth = panelWidth / fieldSizeX;
 
-        // 26 отрисовываем по Y (горизонтальные полоски)
+        // горизонтальные полоски
         for(int i = 0; i < fieldSizeY; i++) {
             int y = i * cellHeight;
             g.drawLine(0, y, panelWidth, y);
         }
 
-        // 29 отрисовываем по X (вертикальные полоски)
+        // вертикальные полоски
         for(int i = 0; i < fieldSizeX; i++) {
             int x = i * cellWidth;
             g.drawLine(x, 0, x, panelHeight);
         }
     }
 
-    // 32 Метод для нарисования креста в ячейке с центром в X, Y
+    // Метод для нарисования креста в ячейке с центром в X, Y
     void drawX(Graphics g, int cellX, int cellY) {
         if (!isInitialized) return;
         if (gameField.getStepNumber()==0) return;  // Если ходов не сделано - то не рисуем
@@ -147,7 +148,7 @@ public class Map extends JPanel {
     void drawO(Graphics g, int cellX, int cellY) {
         if (!isInitialized) return;
         if (gameField.getStepNumber()==0) return;  // Если ходов не сделано - то не рисуем
-        int x, x2, y, y2; //координаты для рисования
+        int x, y; //координаты для рисования
         int borderStep = 10;
         x = cellWidth * cellX + borderStep/2;
         y = cellHeight * cellY + borderStep/2;
