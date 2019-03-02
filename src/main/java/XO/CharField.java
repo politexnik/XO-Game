@@ -85,25 +85,14 @@ public class CharField {
     //метод для хода ИИ
     //реализована блокировка ходов игрока1
     public void aiStep() {
-        int x, y;
-
         //Проверка, можно ли выиграть следующим ходом. Если можно - ИИ выигрывает
         if (tryToWinMove(PLAYER_2_SYMBOL))
             return;
         //Затем, если не выиграть следующим ходом, ИИ определяет необходимый ход, блокирующий игрока
         if (tryToBlockMove(PLAYER_2_SYMBOL, PLAYER_1_SYMBOL))
             return;
-
-   //если необходимости блокирующего хода нет - то рандомный ход
-        //TODO
-            do {
-                x = rand.nextInt(SIZE_X);
-                y = rand.nextInt(SIZE_Y);
-            } while (!isCellValid(x, y));
-            stepNumber++;
-            setPoint(x, y, PLAYER_2_SYMBOL);
-            lastStepX = x;
-            lastStepY = y;
+        //если необходимости блокирующего хода нет - то рандомный ход
+        randomMove(PLAYER_2_SYMBOL);
     }
 
     //Проверка победы.
@@ -214,13 +203,17 @@ public class CharField {
     //метод для победы следующим ходом или блокировки победы следующим ходом противника
     //player1Symbol - игрок, чей ход
     //player2Symbol - игрок, чью победу смотрим (при блокировке - противник, при победе AI - сам AI)
-    private boolean tryToWinMove(char playerSymbol){
+    private boolean tryToWinMove(char playerSymbol) {
         for (int X = 0; X < field[0].length; X++) {
             for (int Y = 0; Y < field.length; Y++) {
                 if (isCellValid(X, Y)) {
                     setPoint(X, Y, playerSymbol);
-                    if (checkWin(X, Y))
+                    if (checkWin(X, Y)) {
+                        stepNumber++;
+                        lastStepX = X;
+                        lastStepY = Y;
                         return true;
+                    }
                     else {
                         setPoint(X, Y, EMPTY_DOT);
                     }
@@ -233,7 +226,7 @@ public class CharField {
     //метод для победы следующим ходом или блокировки победы следующим ходом противника
     //player1Symbol - игрок, чей ход
     //player2Symbol - игрок, чью победу смотрим (при блокировке - противник, при победе AI - сам AI)
-    private boolean tryToBlockMove(char player1Symbol, char player2Symbol){
+    private boolean tryToBlockMove(char player1Symbol, char player2Symbol) {
         int[] needCoordinates = new int[2];  //массив с переменными-координатами для хода  (X,Y)
         boolean CanWinByNextMove = false;
         for (int X = 0; X < field[0].length; X++) {
@@ -251,6 +244,18 @@ public class CharField {
             }
         }
         return false;
+    }
+
+    private void randomMove(char playerSymbol) {
+        int x, y;
+        do {
+            x = rand.nextInt(SIZE_X);
+            y = rand.nextInt(SIZE_Y);
+        } while (!isCellValid(x, y));
+        stepNumber++;
+        setPoint(x, y, playerSymbol);
+        lastStepX = x;
+        lastStepY = y;
     }
 
     public int getStepNumber() {

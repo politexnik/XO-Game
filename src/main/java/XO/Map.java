@@ -12,11 +12,10 @@ public class Map extends JPanel {
     public static final int MODE_HUMAN_VS_HUMAN = 1;     //Human vs Human
 
     //Заполнение поля
-    int[][] field;
     int fieldSizeX;
     int fieldSizeY;
     int winLength;
-    // 25 высота и ширина каждой ячейки
+    // высота и ширина каждой ячейки
     int cellHeight;
     int cellWidth;
     // переменные для хода игрока/компьютера
@@ -38,7 +37,7 @@ public class Map extends JPanel {
         //окно завершения игры
         endGameWindow = GameWindow.getEndGameWindow();
 
-        // создаем слушателя шелчка мышки
+        // слушатель шелчка мышки для поля
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -75,7 +74,7 @@ public class Map extends JPanel {
         });
     }
     
-    // 31 создаем метод который определяет куда чекнули
+    // создаем метод который определяет куда чекнули
     void update(MouseEvent e) {
         // пиксели делим на ширину и высоту
         cellX = e.getX() / cellWidth;
@@ -84,7 +83,7 @@ public class Map extends JPanel {
         repaint();
     }
 
-    // 24 метод для рисования нашего поля в целом
+    // метод для рисования нашего поля в целом
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -144,7 +143,7 @@ public class Map extends JPanel {
         g.drawLine(x2, y1, x1, y2);
     }
 
-    // 33 Метод для нарисования круга в ячейке с центром в X, Y
+    // Метод для нарисования круга в ячейке с центром в X, Y
     void drawO(Graphics g, int cellX, int cellY) {
         if (!isInitialized) return;
         if (gameField.getStepNumber()==0) return;  // Если ходов не сделано - то не рисуем
