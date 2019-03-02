@@ -24,6 +24,7 @@ class StartNewGameWindow extends JFrame{
 
     private JRadioButton jrbHumVsAi = new JRadioButton("Human vs. AI", true); // указываем что это кнопка
     // выбрана при старте
+    private JRadioButton jrbHumVsAiSimple = new JRadioButton("Human vs. AI simple");
     private JRadioButton jrbHumVsHum = new JRadioButton("Human vs. Human");
     // радио кнопки нужно добавить в группу, чтобы можно было выбрать только 1
     private ButtonGroup gameMode = new ButtonGroup();
@@ -49,11 +50,11 @@ class StartNewGameWindow extends JFrame{
         setTitle("New game parameters");
 
         //  задаем 10 строчек и 1 колонка
-        setLayout(new GridLayout(10, 1));
+        setLayout(new GridLayout(11, 1));
 
-        //  добавляем настроечный контрол
+        //  настроечный контрол
         addGameControlsMode();
-        //  добавляем слайдер
+        //  слайдеры
         addGameControlsFieldWinLenght();
 
         JButton btnStartGame = new JButton("Start a game");
@@ -66,12 +67,14 @@ class StartNewGameWindow extends JFrame{
         add(btnStartGame);
     }
 
-    void btnStartGameClick() {
+    private void btnStartGameClick() {
         int gameMode;
         if(jrbHumVsAi.isSelected())
             gameMode = Map.MODE_HUMAN_VS_AI;
         else if(jrbHumVsHum.isSelected())
             gameMode = Map.MODE_HUMAN_VS_HUMAN;
+        else if(jrbHumVsAiSimple.isSelected())
+            gameMode = Map.MODE_HUMAN_VS_AI_SIMPLE;
         else
             throw new RuntimeException("No buttons selected");
 
@@ -82,17 +85,19 @@ class StartNewGameWindow extends JFrame{
     }
 
     // создаем контрол
-    void addGameControlsMode() {
+    private void addGameControlsMode() {
         add(new JLabel("Choose gaming mode:"));
         // добавляем радио кнопки и заголовок
         gameMode.add(jrbHumVsAi);
         gameMode.add(jrbHumVsHum);
+        gameMode.add(jrbHumVsAiSimple);
         add(jrbHumVsHum);
         add(jrbHumVsAi);
+        add(jrbHumVsAiSimple);
     }
 
     // создаем слайдер
-    void addGameControlsFieldWinLenght() {
+    private void addGameControlsFieldWinLenght() {
         // лайбел будет менять поэтому размер + число
         add(new JLabel("Choose field size:"));
         final JLabel lblFieldSize = new JLabel(STR_FIELD_SIZE + MIN_FIELD_SIZE);

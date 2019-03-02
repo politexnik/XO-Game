@@ -5,18 +5,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class EndGameWindow extends JFrame {
+class EndGameWindow extends JFrame {
     private static final int WIN_HEIGHT = 400; // высота окна
     private static final int WIN_WIDTH = 400; // ширина окна
     private static final int WIN_POS_X = 800; // начальная координата
     private static final int WIN_POS_Y = 300; // начальная координата
 
-    GameWindow gameWindow;
+    private GameWindow gameWindow;
 
     private JTextField textMatchResult = new JTextField("Match result:");
-    //Заготовка под рестарт игры.
-    //private JButton restartGameButton = new JButton("Restart");
-    //private JPanel bottomPanel = new JPanel(new FlowLayout());
 
     EndGameWindow (GameWindow gameWindow) {
         this.gameWindow = gameWindow;
@@ -28,22 +25,12 @@ public class EndGameWindow extends JFrame {
         textMatchResult.setHorizontalAlignment(0);
         textMatchResult.setEditable(false);
         add(textMatchResult);
-//        restartGameButton.addActionListener(new ActionListener() {
-//            //@Override
-//            public void actionPerformed(ActionEvent e) {
-//                GameWindow.startNewGameWindow.setVisible(true);
-//                EndGameWindow.this.setVisible(false);
-//            }
-//        });
-
-//        bottomPanel.add(restartGameButton);
-//        add(bottomPanel);
 
         setResizable(false);
         setVisible(false);
     }
 
-    public void gameResult (String result) {
+    void gameResult (String result) {
         textMatchResult.setText(result);
         setVisible(true);
     }

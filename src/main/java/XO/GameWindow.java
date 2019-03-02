@@ -14,7 +14,7 @@ class GameWindow extends JFrame {
     private static final int WIN_POS_Y = 300; // начальная координата
 
     //константы классов
-    static StartNewGameWindow startNewGameWindow;
+    private static StartNewGameWindow startNewGameWindow;
     private static EndGameWindow endGameWindow;
     private static Map field;
 
@@ -74,7 +74,7 @@ class GameWindow extends JFrame {
     }
 
     //геттер для GameWindow для передачи в Map
-    public static EndGameWindow getEndGameWindow() {
+    static EndGameWindow getEndGameWindow() {
         return endGameWindow;
     }
 }

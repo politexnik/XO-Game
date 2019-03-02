@@ -7,12 +7,11 @@ import java.util.Scanner;
 
 public class CharField {
     // Символы игроков и пустых клеток
-    private final char PLAYER_1_SYMBOL = 'X';
-    private final char PLAYER_2_SYMBOL = 'O';
-    private final char EMPTY_DOT = '·';
-    // Размеры поля
-    private final Map map;
+    private static final char PLAYER_1_SYMBOL = 'X';
+    private static final char PLAYER_2_SYMBOL = 'O';
+    private static final char EMPTY_DOT = '·';
 
+    // Размеры поля
     private int SIZE_X;
     private int SIZE_Y;
     private int SCORE_IN_LINE;     //сколько символов подряд нужно для выигрыша
@@ -25,20 +24,19 @@ public class CharField {
 
     private int stepNumber = 0; //номер хода
 
-    public CharField(Map map) {
-        this.map = map;
+    CharField(Map map) {
         SIZE_X = map.fieldSizeX;
         SIZE_Y = map.fieldSizeY;
         SCORE_IN_LINE = map.winLength;
-        field = setField(SIZE_X, SIZE_Y, EMPTY_DOT);
+        field = setField(SIZE_Y, SIZE_X);
     }
 
     // метод установки поля (возвращает поле размером x*y, заполненное symbol
-    public static char[][] setField(int y, int x, char symbol) {
+    private static char[][] setField(int y, int x) {
         char[][] field = new char[y][x];
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
-                field[i][j] = symbol;
+                field[i][j] = EMPTY_DOT;
             }
         }
         return field;
@@ -55,28 +53,25 @@ public class CharField {
     }
 
     // метод для задания символа в поле
-    public void setPoint(int x, int y, char symbol) {
+    private void setPoint(int x, int y, char symbol) {
         field[y][x] = symbol;
     }
 
     // метод для проверки правильности и возможности хода
-    public boolean isCellValid(int x, int y) {
+    private boolean isCellValid(int x, int y) {
         //проверка вылета за границы при вводе
         if (!isInsideBorder(x, y)) {
             return false;
         }
-        //Если ячейка уже занята
-        if (field[y][x] == PLAYER_1_SYMBOL || field[y][x] == PLAYER_2_SYMBOL) {
-            return false;
-        }
-        return true;
+        //Если ячейка уже занята или нет
+        return !(field[y][x] == PLAYER_1_SYMBOL || field[y][x] == PLAYER_2_SYMBOL);
     }
 
     //Метод для хода игрока из окна программы
-    public void userMove(int x, int y) {
+    void userMove(int x, int y, char playerSymbol) {
         if (isCellValid(x, y)) {
             stepNumber++;
-            setPoint(x, y, PLAYER_1_SYMBOL);
+            setPoint(x, y, playerSymbol);
             lastStepX = x;
             lastStepY = y;
         }
@@ -84,7 +79,7 @@ public class CharField {
 
     //метод для хода ИИ
     //реализована блокировка ходов игрока1
-    public void aiStep() {
+    void aiStep() {
         //Проверка, можно ли выиграть следующим ходом. Если можно - ИИ выигрывает
         if (tryToWinMove(PLAYER_2_SYMBOL))
             return;
@@ -95,8 +90,12 @@ public class CharField {
         randomMove(PLAYER_2_SYMBOL);
     }
 
+    void aiSimpleStep() {
+        randomMove(PLAYER_2_SYMBOL);    //для возможного последующего развития простой ход ИИ запихнут в отдельный метод
+    }
+
     //Проверка победы.
-    public boolean checkWin(int X, int Y) {
+    boolean checkWin(int X, int Y) {
         /*Реализована следующим образом - по переменным X,Y начинаем идти влево, вправо и по диагонали до первых
         не совпадающих с X,Y ячейкой, либо до достижения нужного количества символов в ряду.
         Работает на любом количестве ячеек в поле
@@ -158,19 +157,13 @@ public class CharField {
                 break;
             }
         }
-
-        if (scoreInLine >= SCORE_IN_LINE) { // если в линии достаточное количество символов
-            return true;
-        }
-        return false;   // если не достигли нужного количества
+        // если в линии достаточное количество символов -> true, // если не достигли нужного количества -> false
+        return (scoreInLine >= SCORE_IN_LINE);
     }
 
     //метод определения адреса ячейки внутри границы игрового поля
     private boolean isInsideBorder(int x, int y) {
-        if (x < 0 || x > field[0].length - 1 || y < 0 || y > field.length - 1) {
-            return false;
-        }
-        return true;
+        return !(x < 0 || x > field[0].length - 1 || y < 0 || y > field.length - 1);
     }
 
     //метод определения выигрыша игрока следующим ходом в зависимости от хода ИИ
@@ -228,7 +221,7 @@ public class CharField {
     //player2Symbol - игрок, чью победу смотрим (при блокировке - противник, при победе AI - сам AI)
     private boolean tryToBlockMove(char player1Symbol, char player2Symbol) {
         int[] needCoordinates = new int[2];  //массив с переменными-координатами для хода  (X,Y)
-        boolean CanWinByNextMove = false;
+        boolean CanWinByNextMove;
         for (int X = 0; X < field[0].length; X++) {
             for (int Y = 0; Y < field.length; Y++) {
                 if (isCellValid(X, Y)) {
@@ -258,30 +251,37 @@ public class CharField {
         lastStepY = y;
     }
 
-    public int getStepNumber() {
+    int getStepNumber() {
         return stepNumber;
     }
 
-    public int getLastStepX() {
+    int getLastStepX() {
         return lastStepX;
     }
 
-    public int getLastStepY() {
+    int getLastStepY() {
         return lastStepY;
     }
 
-    public int getSIZE_X() {
+    int getSIZE_X() {
         return SIZE_X;
     }
 
-    public int getSIZE_Y() {
+    int getSIZE_Y() {
         return SIZE_Y;
     }
 
-    public char getChar(int x, int y) {
+    char getChar(int x, int y) {
         return field[y][x];
     }
 
+    char getPLAYER_1_SYMBOL() {
+        return PLAYER_1_SYMBOL;
+    }
+
+    char getPLAYER_2_SYMBOL() {
+        return PLAYER_2_SYMBOL;
+    }
 }
 
 
